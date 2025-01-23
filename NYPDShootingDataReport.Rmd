@@ -1,0 +1,81 @@
+---
+title: "NYPD Shooting Analysis"
+author: "JBrien Barcoma"
+date: "2025-01-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+### Overview of Dataset
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce arcu purus, dignissim a ligula a, placerat consequat dui. Phasellus pellentesque justo eu augue tincidunt, sit amet scelerisque libero tincidunt. Integer id rutrum diam. Donec in mi posuere, maximus nisi at, tempus massa. Etiam a mauris id turpis malesuada suscipit at.
+
+### Objectives of Analysis
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce arcu purus, dignissim a ligula a, placerat consequat dui. Phasellus pellentesque justo eu augue tincidunt, sit amet scelerisque libero tincidunt. Integer id rutrum diam. Donec in mi posuere, maximus nisi at, tempus massa. Etiam a mauris id turpis malesuada suscipit at.
+
+## Dataset Overview
+
+### Data Source
+
+### Dataset Description
+
+### Key Features and Variables
+
+## Data Preprocessing
+
+### Missing Values and Handling
+
+### Data Cleaning & Transformation
+
+## Exploratory Data Analysis
+
+### Plot 1
+```{r pressure1, echo=TRUE}
+plot(pressure)
+```
+
+### Plot 2
+```{r pressure2, echo=TRUE}
+plot(pressure)
+```
+
+### Plot 3
+```{r pressure3, echo=TRUE}
+plot(pressure)
+```
+
+## Data Visualization & Insights
+
+### Plot 1
+```{r pressure4, echo=TRUE}
+plot(pressure)
+```
+
+### Plot 2
+```{r pressure5, echo=TRUE}
+plot(pressure)
+```
+
+### Plot 3
+```{r pressure6, echo=TRUE}
+plot(pressure)
+```
+
+## Conclusion
+
+```{r cars}
+summary(cars)
+```
+
+## References
+### Session Info
+```{r sessioninfo, echo=TRUE}
+sessionInfo()
+```
+### Resources
