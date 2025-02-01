@@ -2,75 +2,206 @@
 title: "NYPD Shooting Analysis"
 author: "JBrien Barcoma"
 date: "2025-01-23"
-output: pdf_document
+output: 
+      pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2)
+library(forcats)
+library(dplyr)
 ```
 
 ## Introduction
 
-### Overview of Dataset
+### Overview of Report
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce arcu purus, dignissim a ligula a, placerat consequat dui. Phasellus pellentesque justo eu augue tincidunt, sit amet scelerisque libero tincidunt. Integer id rutrum diam. Donec in mi posuere, maximus nisi at, tempus massa. Etiam a mauris id turpis malesuada suscipit at.
+This report expounds the data analysis, visualization and insights derived from the dataset "NYPD Shooting Incident Data (Historic)" by the New York Police Department.
 
 ### Objectives of Analysis
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce arcu purus, dignissim a ligula a, placerat consequat dui. Phasellus pellentesque justo eu augue tincidunt, sit amet scelerisque libero tincidunt. Integer id rutrum diam. Donec in mi posuere, maximus nisi at, tempus massa. Etiam a mauris id turpis malesuada suscipit at.
+Rather than simply exploring the dataset, we aim to purposely have the motivation to identify opportunities to reduce shooting incidents, in addition to obtaining any other insights that may assist or improve government operations in the topic of concern.
 
 ## Dataset Overview
-
 ### Data Source
+The data was downloaded from the US Government's Open Data site (https://catalog.data.gov/dataset) on 1 January 2025. Incidents from January 2006 to December 2023
 
 ### Dataset Description
+```{r}
+df <- read_csv("https://data.cityofnewyork.us/api/views/833y-fsy8/rows.csv")
+```
+The dateset consists of 21 columns and 28562 rows.
+
+Below are the 21 column names and their respective data types.
+```{r}
+summary(df)
+```
+
+
+
+```{r}
+generate_summary <- function(df) {
+  # Create a summary data frame
+  summary_df <- data.frame(
+    Column_Name = names(df),                              # Column name
+    Data_Type = I(sapply(df, class)),                    # Include all classes as a list
+    Sample_Value = sapply(df, function(col) {
+      if (length(na.omit(col)) > 0) na.omit(col)[1] else NA
+    }), # First non-NA value
+    NA_Count = sapply(df, function(col) sum(is.na(col))), # Number of missing values
+    Unique_Values = sapply(df, function(col) length(unique(na.omit(col)))), # Unique non-NA values
+    Min_Value = sapply(df, function(col) {
+      if (is.numeric(col)) min(col, na.rm = TRUE) else NA
+    }), # Min value for numeric columns
+    Max_Value = sapply(df, function(col) {
+      if (is.numeric(col)) max(col, na.rm = TRUE) else NA
+    }), # Max value for numeric columns
+    Mean_Value = sapply(df, function(col) {
+      if (is.numeric(col)) mean(col, na.rm = TRUE) else NA
+    }), # Mean value for numeric columns
+    Mode_Value = sapply(df, function(col) {
+      if (is.character(col) || is.factor(col)) {
+        # Return the most frequent value for categorical columns
+        tab <- table(col)
+        names(tab)[which.max(tab)]
+      } else {
+        NA
+      }
+    }) # Mode for categorical columns
+  )
+  
+  return(summary_df)
+}
+
+generate_summary(df)
+```
+
+We will remove INCIDENT_KEY, X_COORD_CD, Y_COORD_CD, and Lon_Lat. We will also rename the columns appropriately.
+
+```{r}
+df <- df %>%
+  select(-c(
+    INCIDENT_KEY,
+    LOC_OF_OCCUR_DESC, 
+    PRECINCT, 
+    JURISDICTION_CODE, 
+    LOC_CLASSFCTN_DESC,
+    STATISTICAL_MURDER_FLAG,
+    X_COORD_CD,
+    Y_COORD_CD,
+    Lon_Lat))
+```
 
 ### Key Features and Variables
 
 ## Data Preprocessing
-
 ### Missing Values and Handling
+Let us look at the percentage of missing values for each column, this will inform us on our interpretation of results in our later analysis.
+```{r}
+# 
+```
 
 ### Data Cleaning & Transformation
 
+## Dates
+
+We will mutate the given date values and create new columns for Year, Month and Day of the Week and Hour.
+
+```{r}
+df <- df %>%
+     mutate(OCCUR_DATE = mdy(OCCUR_DATE),
+            OCCUR_TIME = hms(OCCUR_TIME))
+```
+
+```{r}
+df <- df %>%
+  mutate(date_column = dmy(OCCUR_DATE),
+         month = month(OCCUR_DATE),
+         year = year(OCCUR_DATE),
+         day_of_week = wday(OCCUR_DATE, label = TRUE, abbr = FALSE),
+         hour = hour(OCCUR_TIME))
+```
+
 ## Exploratory Data Analysis
+### Incidents by burough
 
-### Plot 1
-```{r pressure1, echo=TRUE}
-plot(pressure)
+This graph shows the count of incidents by burough
+x <- Burough
+y <- # of Incidents
+```{r boro, echo=TRUE}
+ggplot(df %>% filter(!is.na(LOCATION_DESC) & !is.null(LOCATION_DESC) & !LOCATION_DESC %in% c("(null)")), 
+       aes(x = fct_infreq(LOCATION_DESC))) +
+      geom_bar(fill = "purple") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      labs(title = "Bar Plot of Incidents by Location Description",
+           x = "Location",
+           y = "Number of Incidents")
 ```
 
-### Plot 2
+### Incidents by Year by Burough
+
+Let us look at the unique entries. We notice NA, null and NONE entries. We will remove them, but first we shall find out what percentage of incidents have NA, null and NONE entries.
+
+```{r}
+#list unique entries
+unique(df$LOCATION_DESC)
+```
+
+```{r}
+#convert null and none to NA
+#create new column "isNA?"
+#stacked bar chart of non-NA/NULL vs NA/NULL
+```
+
+```{r}
+# Create new Month & Year Column
+df <- df %>%
+  mutate(date_column = dmy(date_column),
+         month = month(date_column),
+         year = year(date_column),
+         day_of_week = wday(date_column, label = TRUE, abbr = FALSE))  # Extract full weekday name
+```
+
+Below is the chart for the number of incidents by location, for all years.
+
 ```{r pressure2, echo=TRUE}
-plot(pressure)
+ggplot(df %>% filter(!is.na(LOCATION_DESC) & !is.null(LOCATION_DESC)), aes(x = fct_infreq(LOCATION_DESC))) +
+      geom_bar(fill = "purple") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+      labs(title = "Bar Plot of Incidents by Location Description",
+           x = "Location",
+           y = "Number of Incidents")
 ```
 
-### Plot 3
+Let us look at the top 10 locations and break them down by year.
+
+```{r}
+```
+
+### Incidents by Month by Year by Burough
 ```{r pressure3, echo=TRUE}
-plot(pressure)
 ```
 
 ## Data Visualization & Insights
 
-### Plot 1
+### Gender Ratio by Location
 ```{r pressure4, echo=TRUE}
-plot(pressure)
 ```
 
-### Plot 2
+### Map / Heat Map
 ```{r pressure5, echo=TRUE}
-plot(pressure)
 ```
 
 ### Plot 3
 ```{r pressure6, echo=TRUE}
-plot(pressure)
 ```
 
 ## Conclusion
 
 ```{r cars}
-summary(cars)
 ```
 
 ## References
